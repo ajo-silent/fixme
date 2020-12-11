@@ -2,8 +2,13 @@
 
 function login($username, $password) {
     global $db;
-    $query = "select `id` from `users` where `username` = '$username' AND `password` = '$password'";
-    $result = $db->query($query);
+    $query = "select `id` from `users` where `username` = ? AND `password` = ?";
+
+    $stmt = $db->prepare($query);
+    $stmt->bind_param("ss", $username, $password);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
     if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
         $_SESSION['logged_in'] = true;
         $_SESSION['userid'] = $row['id'];
